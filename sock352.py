@@ -296,7 +296,7 @@ class socket:
             # thats the max payload we represent with a "B"
             ######################
             # create a new header
-            length = 2047
+            length = 65500
             while(window < 1):
                 newHeader = self.packet()
                 window = newHeader[10]
@@ -354,6 +354,7 @@ class socket:
                     gBuffer += data
                     curr += 1
                 header = self.packetHeader(0x0, 0x04, 0, seq_no, 0)
+                print seq_no
                 sock.sendto(header, address)
                 continue
             bytesreceived += gBuffer
@@ -385,7 +386,7 @@ class socket:
         global sock, sock352PktHdrData, address, data
         # attempts to recv packet if not will print error message
         try:
-            (data, dest) = sock.recvfrom(4096)
+            (data, dest) = sock.recvfrom(65536)
         except syssock.timeout:
             print("No packets received, timeout window maxed")
             head = [0,0,0,0,0,0,0,0,0,0,0,0]
