@@ -195,7 +195,7 @@ class socket:
                     return
 
                 for public_address in publicKeys:
-                     if(public_address == (address[0], str(port))):
+                    if(public_address == (address[0], str(port))):
                         addressPkey = publicKeys[public_address]
                         break
                 if(addressPkey == -1):
@@ -300,7 +300,7 @@ class socket:
             while(window < 1):
                 newHeader = self.packet()
                 window = newHeader[10]
-            if(length > window):
+            if(messageLength > window):
                 messageLength = window
             bit = 0x0
             filler = 0
@@ -376,23 +376,23 @@ class socket:
                 header = self.packetHeader(0x0, SOCK352_ACK, 0, seq_no, 0)
                 sock.sendto(header, address)
             gBuffer += data
-            
+
             curr += 1
         print("Finished receiving the specified amount.")
         return bytesreceived
- 
+
     # Packet class
-    def  packet(self):
+    def packet(self):
         global sock, sock352PktHdrData, address, data
         # attempts to recv packet if not will print error message
         try:
             (data, dest) = sock.recvfrom(65536)
         except syssock.timeout:
             print("No packets received, timeout window maxed")
-            head = [0,0,0,0,0,0,0,0,0,0,0,0]
+            head = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             return head
         # unpacks the packet
-        (data_header, data_msg) = (data[:40],data[40:])
+        (data_header, data_msg) = (data[:40], data[40:])
         header = struct.unpack(sock352PktHdrData, data_header)
         flag = header[1]
 
@@ -401,7 +401,8 @@ class socket:
             address = dest
             return header
         elif(flag == SOCK352_FIN):
-            terminalHeader = self.packetHeader(0x0,SOCK352_ACK,0,header[8],0)
+            terminalHeader = self.packetHeader(
+                0x0, SOCK352_ACK, 0, header[8], 0)
             sock.sendto(terminalHeader, dest)
             return header
         elif(flag == 0x03):
@@ -412,14 +413,16 @@ class socket:
         elif(flag == SOCK352_RESET):
             return header
         else:
-            header = self.packetHeader(0x0,SOCK352_RESET,header[8],header[9],0)
-            if(sock.sendto(header,dest) > 0):
+            header = self.packetHeader(
+                0x0, SOCK352_RESET, header[8], header[9], 0)
+            if(sock.sendto(header, dest) > 0):
                 print("Sent a reset packet")
             else:
                 print("Reset packet failed")
             return header
-    #we found that we were repeating code a lot so decided to make a function out of it
-    def  packetHeader(self, bit, flag, seqNo, ackNo, payLoad):
+    # we found that we were repeating code a lot so decided to make a function out of it
+
+    def packetHeader(self, bit, flag, seqNo, ackNo, payLoad):
         global sock352PktHdrData, header_len, version, protocol
         global checksum, source_port, dest_port, window
 
@@ -430,5 +433,5 @@ class socket:
         payload_len = payLoad
         udpPkt_hdr_data = struct.Struct(sock352PktHdrData)
         return udpPkt_hdr_data.pack(version, flags, opt_ptr, protocol,
-            header_len, checksum, source_port, dest_port, sequence_no,
-            ack_no, window, payload_len)
+                                    header_len, checksum, source_port, dest_port, sequence_no,
+                                    ack_no, window, payload_len)
