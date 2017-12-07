@@ -272,7 +272,7 @@ class socket:
         counter = 0
         while(ACKFlag != temp):
             counter += 1
-            if(counter > 4):
+            if(counter > 3):
                 print("Connection closed by other host")
                 break
             try:
