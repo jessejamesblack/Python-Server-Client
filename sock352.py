@@ -300,8 +300,8 @@ class socket:
             while(window < 1):
                 newHeader = self.packet()
                 window = newHeader[10]
-            if(messageLength > window):
-                messageLength = window
+            if(length > window):
+                length = window
             bit = 0x0
             filler = 0
             message = ""
@@ -325,8 +325,8 @@ class socket:
                 ACKFlag = newHeader[9]
                 window = newHeader[10]
             window = newWindow
-            messageLength -= length
-            buffer = buffer[length:]
+            messageLength -= totalSent
+            buffer = buffer[totalSent:]
             bytessent += totalSent
             curr += 1
         print("Bytes sent = %d" % bytessent)
@@ -354,7 +354,7 @@ class socket:
                     gBuffer += data
                     curr += 1
                 header = self.packetHeader(0x0, 0x04, 0, seq_no, 0)
-                print seq_no
+                #print seq_no
                 sock.sendto(header, address)
                 continue
             bytesreceived += gBuffer
